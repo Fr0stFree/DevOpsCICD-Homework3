@@ -1,16 +1,16 @@
-- name: Setup DB
-  hosts: db
+- name: Setup master DB
+  hosts: db-master
   become: true
   vars:
-    db_port: 3306
+    db_id: 1
     db_user: practicum
     db_name: practicum
-    db_host: 127.0.0.1
     db_password: password
   roles:
-    - mysql
+    - mysql-common
+    - mysql-master
 
-- name: Setup Web
+- name: Setup WordPress
   hosts: web
   become: true
   vars:
