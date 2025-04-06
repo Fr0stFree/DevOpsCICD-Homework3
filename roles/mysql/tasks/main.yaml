@@ -1,9 +1,9 @@
 - name: Install dependencies
   apt:
-    name: '{{ item }}'
+    name: "{{ item }}"
     state: present
     update_cache: yes
-  with_items: '{{ dependencies }}'
+  with_items: "{{ dependencies }}"
 
 - name: Start MySQL
   service:
@@ -24,9 +24,19 @@
 
 - name: Create database
   mysql_db:
-    name: '{{ db_name }}'
+    name: "{{ db_name }}"
     state: present
-    login_user: '{{ db_user }}'
-    login_password: '{{ db_password }}'
-    login_host: '{{ db_host }}'
-    login_port: '{{ db_port }}'
+    login_user: "{{ db_user }}"
+    login_password: "{{ db_password }}"
+    login_host: "{{ db_host }}"
+    login_port: "{{ db_port }}"
+
+- name: Update bind-address
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+    state: present
+  notify: Restart MySQL
+
+
