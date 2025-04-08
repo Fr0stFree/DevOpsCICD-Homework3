@@ -8,7 +8,7 @@
     password: "{{ db_password }}"
     state: present
     host: "%"
-    priv: "{{ db_name }}.*:ALL"
+    priv: "*.*:ALL"
 
 - name: Create database
   mysql_db:
@@ -24,7 +24,7 @@
     name: "{{ repl_user }}"
     password: "{{ repl_password }}"
     host: '%'
-    priv: "{{ db_name }}.*:ALL"
+    priv: "*.*:ALL"
     state: present
     login_user: "{{ db_root_user }}"
     login_host: "{{ db_host }}"
@@ -35,7 +35,22 @@
   lineinfile:
     path: "{{ configuration_file }}"
     regexp: '^log_bin'
-    line: 'log_bin = /var/log/mysql/mysql-bin.log'
+    line: 'log_bin = {{ log_bin_path }}'
     state: present
   notify: Restart MySQL
 
+- name: Get master status
+  mysql_replication:
+    mode: getprimary
+    login_user: "{{ db_root_user }}"
+    login_host: "{{ db_host }}"
+    login_port: "{{ db_port }}"
+    login_unix_socket: "{{ db_login_unix_socket }}"
+  register: master_status
+
+- name: Set master status facts
+  set_fact:
+    master_log_file: "{{ master_status.File }}"
+    master_log_pos: "{{ master_status.Position }}"
+  delegate_to: localhost
+  run_once: true
