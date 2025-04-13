@@ -1,4 +1,7 @@
-# WordPress Cluster
+# WordSquid
+
+Automated deployment of a MySQL database cluster (Master-Slave) with WordPress optimization. Includes Ansible playbooks and Vagrant configuration
+
 ## Setup MySQL Server and WordPress on virtual machine
 
 #### Prerequisites
