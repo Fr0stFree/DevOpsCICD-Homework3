@@ -1,8 +1,7 @@
+---
 dependencies:
   - python3-pymysql
   - mysql-server
-
-configuration_file: /etc/mysql/mysql.conf.d/mysqld.cnf
 
 # Login settings
 db_root_user: root
@@ -14,4 +13,3 @@ db_login_unix_socket: /var/run/mysqld/mysqld.sock
 # Replication settings
 repl_password: replpassword
 repl_user: repl
-log_bin_path: /var/log/mysql/mysql-bin.log

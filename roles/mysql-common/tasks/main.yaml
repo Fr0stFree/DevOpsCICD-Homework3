@@ -1,3 +1,4 @@
+---
 - name: Install dependencies
   apt:
     name: "{{ item }}"
@@ -5,24 +6,25 @@
     update_cache: yes
   with_items: "{{ dependencies }}"
 
+- name: Create mysql configuration file
+  template:
+    src: mysqld.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart MySQL
+
 - name: Start MySQL
   service:
     name: mysql
     state: started
 
-- name: Update bind-address
-  lineinfile:
-    path: "{{ configuration_file }}"
-    regexp: '^bind-address'
-    line: 'bind-address = 0.0.0.0'
-    state: present
-  notify: Restart MySQL
-
-- name: Update server id
-  when: db_id is defined
-  lineinfile:
-    path: "{{ configuration_file }}"
-    regexp: '^server-id'
-    line: 'server-id = {{ db_id }}'
-    state: present
-  notify: Restart MySQL
+- name: Enable MySQL
+  systemd:
+    name: mysql
+    enabled: yes
+  register: status
+  until: status is not failed
+  retries: 3
+  delay: 1
