@@ -1,4 +1,4 @@
-# DevOps Homework 1
+# WordPress Cluster
 ## Setup MySQL Server and WordPress on virtual machine
 
 #### Prerequisites
