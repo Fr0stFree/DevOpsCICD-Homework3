@@ -9,7 +9,7 @@
 - name: Create mysql configuration file
   template:
     src: mysqld.cnf.j2
-    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    dest: "{{ db_config_file }}"
     owner: root
     group: root
     mode: '0644'
@@ -24,7 +24,3 @@
   systemd:
     name: mysql
     enabled: yes
-  register: status
-  until: status is not failed
-  retries: 3
-  delay: 1

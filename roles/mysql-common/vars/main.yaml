@@ -3,6 +3,10 @@ dependencies:
   - python3-pymysql
   - mysql-server
 
+# MySQL configuration settings
+db_config_file: /etc/mysql/mysql.conf.d/mysqld.cnf
+db_data_dir: /var/lib/mysql
+
 # Login settings
 db_root_user: root
 db_root_password: rootpassword
@@ -13,3 +17,4 @@ db_login_unix_socket: /var/run/mysqld/mysqld.sock
 # Replication settings
 repl_password: replpassword
 repl_user: repl
+bin_log_file: /var/log/mysql/mysql-bin.log

@@ -39,7 +39,7 @@
 - name: Create node exporter systemd service file
   template:
     src: node_exporter.service.j2
-    dest: /etc/systemd/system/node_exporter.service
+    dest: "{{ node_exporter_service_file }}"
     owner: root
     group: root
     mode: '0644'
@@ -51,6 +51,3 @@
     enabled: yes
     daemon_reload: yes
   register: status
-  until: status is not failed
-  retries: 3
-  delay: 1

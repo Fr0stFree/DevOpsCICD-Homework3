@@ -17,10 +17,9 @@
 #
 user    = mysql
 # pid-file  = /var/run/mysqld/mysqld.pid
-# socket    = /var/run/mysqld/mysqld.sock
-# port      = 3306
-# datadir   = /var/lib/mysql
-
+socket    = {{ db_login_unix_socket }}
+port      = {{ db_port }}
+datadir   = {{ db_data_dir }}
 
 # If MySQL is running as a replication slave, this should be
 # changed. Ref https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_tmpdir
@@ -72,7 +71,7 @@ log_error = /var/log/mysql/error.log
 #       other settings you may need to change.
 
 server-id                       = {{ db_id }}
-log_bin                         = /var/log/mysql/mysql-bin.log
+log_bin                         = {{ bin_log_file}}
 max_binlog_size                 = 100M
 # binlog_expire_logs_seconds    = 2592000
 # binlog_do_db                  = include_database_name
