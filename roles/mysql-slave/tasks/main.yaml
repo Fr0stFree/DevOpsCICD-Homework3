@@ -20,7 +20,7 @@
     master_host: "{{ master_host }}"
     master_user: "{{ repl_user }}"
     master_password: "{{ repl_password }}"
-    master_log_file: "{{ hostvars['beta'].master_log_file }}"
+    master_log_file: "{{ hostvars['beta'].master_log_file }}"  # TODO: find a better way to retrieve those variables
     master_log_pos: "{{ hostvars['beta'].master_log_pos }}"
     login_user: "{{ db_root_user }}"
     login_host: "{{ db_host }}"
