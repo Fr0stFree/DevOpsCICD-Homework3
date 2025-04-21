@@ -22,7 +22,9 @@
     state: started
 
 - name: Check MySQL service status
-  command: systemctl status mysql
-  register: status
-  failed_when: status.rc != 0
+  ansible.builtin.service:
+    name: mysql
+    state: started
+    enabled: true
+  check_mode: yes
   changed_when: false

@@ -32,11 +32,6 @@
     owner: '{{ user_login }}'
     group: '{{ user_group }}'
     mode: '0755'
-  register: extract_wordpress
-
-- name: Show extracted files
-  debug:
-    msg: "Extracted files: {{ extract_wordpress }}"
 
 - name: Move WordPress files
   copy:

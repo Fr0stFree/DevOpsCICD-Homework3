@@ -1,14 +1,14 @@
 ---
 - name: Create user group
   group:
-    name: '{{ user_group }}'
+    name: "{{ user_group }}"
     system: yes
     state: present
 
 - name: Create prometheus user
   user:
-    name: '{{ user_login }}'
-    group: '{{ user_group }}'
+    name: "{{ user_login }}"
+    group: "{{ user_group }}"
     system: yes
     create_home: no
 
@@ -16,10 +16,10 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: '{{ user_login }}'
-    group: '{{ user_group }}'
-    mode: '0755'
-  with_items: 
+    owner: "{{ user_login }}"
+    group: "{{ user_group }}"
+    mode: "0755"
+  with_items:
     - /etc/prometheus
     - /var/lib/prometheus
     - /var/log/prometheus
@@ -27,35 +27,36 @@
 - name: Download prometheus archive
   get_url:
     url: "{{ prometheus_download_url }}"
-    dest: "{{ prometheus_download_path }}"
-    mode: '0644'
+    dest: /tmp/prometheus.tar.gz
+    mode: "0644"
 
 - name: Extract prometheus archive
   unarchive:
-    src: "{{ prometheus_download_path }}"
-    dest: "{{ prometheus_extract_path }}"
+    src: /tmp/prometheus.tar.gz
+    dest: /tmp
     remote_src: yes
-    mode: '0755'
+    mode: "0755"
+    list_files: yes
+  register: prometheus_extracted
 
 - name: Move prometheus binary files
   copy:
-    src: "{{ prometheus_extract_path }}/{{ prometheus_distribution }}/{{ item }}"
-    dest: "{{ prometheus_install_path }}/{{ item }}"
+    src: "/tmp/{{ item }}"
+    dest: "/usr/local/bin/{{ item | basename }}"
     remote_src: yes
-    owner: '{{ user_login }}'
-    group: '{{ user_group }}'
-    mode: '0755'
-  with_items:
-    - prometheus
-    - promtool
+    owner: "{{ user_login }}"
+    group: "{{ user_group }}"
+    mode: "0755"
+  with_items: "{{ prometheus_extracted.files }}"
+  when: item is match('.*prometheus$') or item is match('.*promtool$')
 
 - name: Create prometheus configuration file
   template:
     src: prometheus.yml.j2
     dest: "{{ prometheus_config_file }}"
-    owner: '{{ user_login }}'
-    group: '{{ user_group }}'
-    mode: '0644'
+    owner: "{{ user_login }}"
+    group: "{{ user_group }}"
+    mode: "0644"
 
 - name: Create prometheus systemd service file
   template:
@@ -63,7 +64,7 @@
     dest: "{{ prometheus_service_file }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
 
 - name: Start prometheus service
   register: status
@@ -73,8 +74,10 @@
     enabled: true
     daemon_reload: yes
 
-- name: Check prometheus service status
-  command: systemctl status prometheus
-  register: status
-  failed_when: status.rc != 0
+- name: Check Prometheus service status
+  service:
+    name: prometheus
+    state: started
+    enabled: true
+  check_mode: yes
   changed_when: false

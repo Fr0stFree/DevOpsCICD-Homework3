@@ -15,27 +15,30 @@
 - name: Download node exporter archive
   get_url:
     url: "{{ node_exporter_download_url }}"
-    dest: "{{ node_exporter_download_path }}"
-    force: yes
+    dest: /tmp/node_exporter.tar.gz
 
 - name: Extract node exporter archive
   unarchive:
-    src: "{{ node_exporter_download_path }}"
-    dest: "{{ node_exporter_extract_path }}"
+    src: /tmp/node_exporter.tar.gz
+    dest: /tmp
     remote_src: yes
     owner: '{{ user_login }}'
     group: '{{ user_group }}'
     mode: '0755'
+    list_files: yes
+  register: node_exporter_extracted
 
 - name: Move node exporter binary files
   copy:
-    src: "{{ node_exporter_extract_path }}/{{ node_exporter_distribution }}/node_exporter"
-    dest: "{{ node_exporter_install_path }}/node_exporter"
+    src: "{{ node_exporter_extracted.dest }}/{{ item }}"
+    dest: "/usr/local/bin/{{ item | basename }}"
     remote_src: yes
     owner: '{{ user_login }}'
     group: '{{ user_group }}'
     mode: '0755'
-
+  when: item is match('.*node_exporter$')
+  with_items: "{{ node_exporter_extracted.files }}"
+  
 - name: Create node exporter systemd service file
   template:
     src: node_exporter.service.j2
@@ -51,8 +54,10 @@
     enabled: yes
     daemon_reload: yes
 
-- name: Check node exporter service status
-  command: systemctl status node_exporter
-  register: status
-  failed_when: status.rc != 0
+- name: Check Node-Exporter service status
+  service:
+    name: node_exporter
+    state: started
+    enabled: true
+  check_mode: yes
   changed_when: false
