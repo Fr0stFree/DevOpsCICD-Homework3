@@ -50,8 +50,8 @@
   template:
     src: dashboards.yaml.j2
     dest: "{{ grafana_dashboards_file }}"
-    owner: grafana
-    group: grafana
+    owner: "{{ user_login }}"
+    group: "{{ user_group }}"
     mode: '0644'
   notify: Restart Grafana
 
@@ -59,14 +59,14 @@
   file:
     path: "{{ grafana_dashboards_dir }}"
     state: directory
-    owner: grafana
-    group: grafana
+    owner: "{{ user_login }}"
+    group: "{{ user_group }}"
     mode: '0755'
 
 - name: Copy dashboards
   copy:
     src: dashboards/
     dest: "{{ grafana_dashboards_dir }}/"
-    owner: grafana
-    group: grafana
-    mode: '0644'
+    owner: "{{ user_login }}"
+    group: "{{ user_group }}"
+    mode: '0755'
