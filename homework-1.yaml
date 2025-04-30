@@ -3,7 +3,7 @@
   vars:
     mysql_db_id: 1
   roles:
-    - mysql-master
+    - mysql-common
     - mysql-init-db
   tags:
     - master

@@ -1,0 +1,4 @@
+---
+user_login: haproxy
+user_group: haproxy
+haproxy_config_file: /etc/haproxy/haproxy.cfg
